@@ -134,6 +134,33 @@ export interface AnalyticsSummary {
   recentAlertCount: number;
 }
 
+export type SimulateTransactionRequestDeviceType =
+  (typeof SimulateTransactionRequestDeviceType)[keyof typeof SimulateTransactionRequestDeviceType];
+
+export const SimulateTransactionRequestDeviceType = {
+  Mobile: "Mobile",
+  Desktop: "Desktop",
+  Tablet: "Tablet",
+  Unknown: "Unknown",
+} as const;
+
+export interface SimulateTransactionRequest {
+  /** Transaction amount in USD */
+  amount: number;
+  merchantName: string;
+  merchantCategory: string;
+  location: string;
+  deviceType: SimulateTransactionRequestDeviceType;
+  userName?: string;
+}
+
+export interface SimulateTransactionResponse {
+  transaction: Transaction;
+  alertCreated: boolean;
+  /** Human-readable explanation of the risk assessment result */
+  explanation: string;
+}
+
 export interface TrendDataPoint {
   date: string;
   totalTransactions: number;

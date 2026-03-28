@@ -65,6 +65,26 @@ paths:
               schema:
                 $ref: "#/components/schemas/TransactionListResponse"
 
+  /transactions/simulate:
+    post:
+      operationId: simulateTransaction
+      tags: [transactions]
+      summary: Simulate a test transaction
+      description: Creates a demo transaction and runs it through the fraud detection engine
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SimulateTransactionRequest"
+      responses:
+        "201":
+          description: Simulated transaction created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SimulateTransactionResponse"
+
   /transactions/{id}:
     get:
       operationId: getTransaction
@@ -396,6 +416,45 @@ components:
         - totalAmountFlagged
         - riskDistribution
         - recentAlertCount
+
+    SimulateTransactionRequest:
+      type: object
+      properties:
+        amount:
+          type: number
+          description: Transaction amount in USD
+        merchantName:
+          type: string
+        merchantCategory:
+          type: string
+        location:
+          type: string
+        deviceType:
+          type: string
+          enum: [Mobile, Desktop, Tablet, Unknown]
+        userName:
+          type: string
+      required:
+        - amount
+        - merchantName
+        - merchantCategory
+        - location
+        - deviceType
+
+    SimulateTransactionResponse:
+      type: object
+      properties:
+        transaction:
+          $ref: "#/components/schemas/Transaction"
+        alertCreated:
+          type: boolean
+        explanation:
+          type: string
+          description: Human-readable explanation of the risk assessment result
+      required:
+        - transaction
+        - alertCreated
+        - explanation
 
     TrendDataPoint:
       type: object

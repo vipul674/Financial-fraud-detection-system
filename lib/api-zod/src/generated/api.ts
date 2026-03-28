@@ -57,6 +57,19 @@ export const ListTransactionsResponse = zod.object({
 });
 
 /**
+ * Creates a demo transaction and runs it through the fraud detection engine
+ * @summary Simulate a test transaction
+ */
+export const SimulateTransactionBody = zod.object({
+  amount: zod.number().describe("Transaction amount in USD"),
+  merchantName: zod.string(),
+  merchantCategory: zod.string(),
+  location: zod.string(),
+  deviceType: zod.enum(["Mobile", "Desktop", "Tablet", "Unknown"]),
+  userName: zod.string().optional(),
+});
+
+/**
  * @summary Get transaction by ID
  */
 export const GetTransactionParams = zod.object({
