@@ -1,0 +1,18 @@
+packages:
+  "recharts": "Required for dashboard analytics and risk distribution charts"
+  "framer-motion": "Required for premium page transitions and interactive elements"
+  "date-fns": "Required for formatting timestamps in tables"
+  "clsx": "Utility for constructing className strings conditionally"
+  "tailwind-merge": "Utility for merging tailwind classes without style conflicts"
+
+images:
+  - path: "artifacts/fraud-detection/public/images/security-bg.png"
+    description: "Dark, abstract cyber security network mesh background, very deep blue and subtle cyan glowing nodes, extremely minimal and dark, suitable for an enterprise dashboard background overlay"
+    aspect_ratio: "16:9"
+  - path: "artifacts/fraud-detection/public/images/logo-icon.png"
+    description: "Minimalist glowing geometric shield icon, cyber security theme, neon cyan and dark blue, transparent background"
+    aspect_ratio: "1:1"
+
+notes:
+  - Assumes API hooks are exported from @workspace/api-client-react
+  - Utilizing a dark mode enterprise security aesthetic with cyan/teal accents

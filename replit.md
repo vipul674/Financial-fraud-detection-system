@@ -48,6 +48,16 @@ Every package extends `tsconfig.base.json` which sets `composite: true`. The roo
 - `pnpm run build` — runs `typecheck` first, then recursively runs `build` in all packages that define it
 - `pnpm run typecheck` — runs `tsc --build --emitDeclarationOnly` using project references
 
+## Artifacts
+
+### `artifacts/fraud-detection` (`@workspace/fraud-detection`)
+
+React + Vite financial fraud detection system frontend. Dark professional enterprise dashboard.
+
+- Pages: Dashboard, Transactions, Alerts
+- Uses: recharts, framer-motion, date-fns, tailwind
+- Serves at preview path: `/`
+
 ## Packages
 
 ### `artifacts/api-server` (`@workspace/api-server`)
