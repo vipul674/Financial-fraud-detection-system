@@ -31,21 +31,41 @@ export default function Dashboard() {
 
   if (!summary || !trends) return null;
 
+  const asNumber = (value: unknown): number =>
+    typeof value === "number" && Number.isFinite(value) ? value : 0;
+
+  const totalTransactions = asNumber(summary.totalTransactions);
+  const flaggedTransactions = asNumber((summary as Partial<typeof summary>).flaggedTransactions);
+  const blockedTransactions = asNumber((summary as Partial<typeof summary>).blockedTransactions);
+  const totalAlertsOpen = asNumber((summary as Partial<typeof summary>).totalAlertsOpen);
+  const fraudRate = asNumber((summary as Partial<typeof summary>).fraudRate);
+  const totalAmountFlagged = asNumber(summary.totalAmountFlagged);
+  const riskDistribution = {
+    low: asNumber(summary.riskDistribution?.low),
+    medium: asNumber(summary.riskDistribution?.medium),
+    high: asNumber(summary.riskDistribution?.high),
+    critical: asNumber(summary.riskDistribution?.critical),
+  };
+
+  const trendsData = Array.isArray(trends) ? trends : [];
+
   const statCards = [
-    { title: "Total Scanned", value: formatCompactNumber(summary.totalTransactions), icon: CreditCard, color: "text-blue-400", bg: "bg-blue-400/10", border: "border-blue-500/20" },
-    { title: "Flagged (Suspicious)", value: summary.flaggedTransactions.toLocaleString(), icon: AlertTriangle, color: "text-warning", bg: "bg-warning/10", border: "border-warning/20" },
-    { title: "Blocked Transactions", value: summary.blockedTransactions.toLocaleString(), icon: ShieldAlert, color: "text-destructive", bg: "bg-destructive/10", border: "border-destructive/20" },
-    { title: "Open Alerts Queue", value: summary.totalAlertsOpen.toLocaleString(), icon: Activity, color: "text-primary", bg: "bg-primary/10", border: "border-primary/20", glow: true },
-    { title: "Avg Fraud Rate", value: `${summary.fraudRate.toFixed(2)}%`, icon: ShieldCheck, color: "text-success", bg: "bg-success/10", border: "border-success/20" },
-    { title: "Value Protected", value: formatCurrency(summary.totalAmountFlagged), icon: DollarSign, color: "text-purple-400", bg: "bg-purple-400/10", border: "border-purple-500/20" },
+    { title: "Total Scanned", value: formatCompactNumber(totalTransactions), icon: CreditCard, color: "text-blue-400", bg: "bg-blue-400/10", border: "border-blue-500/20" },
+    { title: "Flagged (Suspicious)", value: flaggedTransactions.toLocaleString(), icon: AlertTriangle, color: "text-warning", bg: "bg-warning/10", border: "border-warning/20" },
+    { title: "Blocked Transactions", value: blockedTransactions.toLocaleString(), icon: ShieldAlert, color: "text-destructive", bg: "bg-destructive/10", border: "border-destructive/20" },
+    { title: "Open Alerts Queue", value: totalAlertsOpen.toLocaleString(), icon: Activity, color: "text-primary", bg: "bg-primary/10", border: "border-primary/20", glow: true },
+    { title: "Avg Fraud Rate", value: `${fraudRate.toFixed(2)}%`, icon: ShieldCheck, color: "text-success", bg: "bg-success/10", border: "border-success/20" },
+    { title: "Value Protected", value: formatCurrency(totalAmountFlagged), icon: DollarSign, color: "text-purple-400", bg: "bg-purple-400/10", border: "border-purple-500/20" },
   ];
 
   const pieData = [
-    { name: 'Low Risk', value: summary.riskDistribution.low, color: 'hsl(var(--success))' },
-    { name: 'Medium Risk', value: summary.riskDistribution.medium, color: 'hsl(var(--warning))' },
-    { name: 'High Risk', value: summary.riskDistribution.high, color: 'hsl(var(--orange-500))' },
-    { name: 'Critical Risk', value: summary.riskDistribution.critical, color: 'hsl(var(--destructive))' },
+    { name: 'Low Risk', value: riskDistribution.low, color: 'hsl(var(--success))' },
+    { name: 'Medium Risk', value: riskDistribution.medium, color: 'hsl(var(--warning))' },
+    { name: 'High Risk', value: riskDistribution.high, color: 'hsl(var(--orange-500))' },
+    { name: 'Critical Risk', value: riskDistribution.critical, color: 'hsl(var(--destructive))' },
   ].filter(d => d.value > 0);
+
+  const safePieData = pieData.length > 0 ? pieData : [{ name: 'No Data', value: 1, color: 'hsl(var(--muted))' }];
 
   return (
     <div className="space-y-8 pb-8">
@@ -83,7 +103,7 @@ export default function Dashboard() {
           </div>
           <div className="flex-1 min-h-[300px] w-full">
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={trends} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+              <AreaChart data={trendsData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                 <defs>
                   <linearGradient id="colorTotal" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3}/>
@@ -134,7 +154,7 @@ export default function Dashboard() {
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
-                  data={pieData}
+                  data={safePieData}
                   cx="50%"
                   cy="50%"
                   innerRadius={60}
@@ -143,7 +163,7 @@ export default function Dashboard() {
                   dataKey="value"
                   stroke="none"
                 >
-                  {pieData.map((entry, index) => (
+                  {safePieData.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={entry.color} style={{ filter: `drop-shadow(0px 0px 4px ${entry.color}80)` }} />
                   ))}
                 </Pie>
@@ -156,7 +176,7 @@ export default function Dashboard() {
             </ResponsiveContainer>
             {/* Center text for donut */}
             <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none pb-8">
-              <span className="text-3xl font-bold font-mono text-foreground">{summary.flaggedTransactions + summary.blockedTransactions}</span>
+              <span className="text-3xl font-bold font-mono text-foreground">{flaggedTransactions + blockedTransactions}</span>
               <span className="text-xs text-muted-foreground">Total Risky</span>
             </div>
           </div>

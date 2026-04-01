@@ -110,6 +110,10 @@ function getStatus(riskLevel: string): "pending" | "approved" | "flagged" | "blo
 }
 
 async function seed() {
+  console.log("Resetting existing mock data...");
+  await db.delete(alertsTable);
+  await db.delete(transactionsTable);
+
   console.log("Seeding transactions...");
 
   const transactions: (typeof transactionsTable.$inferInsert)[] = [];

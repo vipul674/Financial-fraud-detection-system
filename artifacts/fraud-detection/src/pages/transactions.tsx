@@ -76,6 +76,10 @@ export default function Transactions() {
     status: status || undefined,
   });
 
+  const transactions = Array.isArray(data?.transactions) ? data.transactions : [];
+  const total = typeof data?.total === "number" ? data.total : 0;
+  const totalPages = typeof data?.totalPages === "number" ? data.totalPages : 0;
+
   const getRiskBadge = (level: string) => {
     switch (level) {
       case "critical": return <Badge variant="destructive" className="animate-pulse">Critical</Badge>;
@@ -178,7 +182,7 @@ export default function Transactions() {
                     <td className="px-6 py-4 text-right"><div className="h-8 bg-muted rounded w-8 inline-block" /></td>
                   </tr>
                 ))
-              ) : data?.transactions.length === 0 ? (
+              ) : transactions.length === 0 ? (
                 <tr>
                   <td colSpan={7} className="px-6 py-12 text-center text-muted-foreground">
                     <ShieldAlert className="w-12 h-12 mx-auto mb-3 opacity-20" />
@@ -186,7 +190,7 @@ export default function Transactions() {
                   </td>
                 </tr>
               ) : (
-                data?.transactions.map((tx) => (
+                transactions.map((tx) => (
                   <tr
                     key={tx.id}
                     className="hover:bg-accent/30 transition-colors cursor-pointer group"
@@ -221,18 +225,18 @@ export default function Transactions() {
         </div>
 
         {/* Pagination */}
-        {data && data.totalPages > 1 && (
+        {data && totalPages > 1 && (
           <div className="p-4 border-t border-border/50 bg-background/20 flex items-center justify-between">
             <span className="text-sm text-muted-foreground">
               Showing <span className="font-medium text-foreground">{(page - 1) * limit + 1}</span> to{" "}
-              <span className="font-medium text-foreground">{Math.min(page * limit, data.total)}</span> of{" "}
-              <span className="font-medium text-foreground">{data.total}</span> entries
+              <span className="font-medium text-foreground">{Math.min(page * limit, total)}</span> of{" "}
+              <span className="font-medium text-foreground">{total}</span> entries
             </span>
             <div className="flex gap-2">
               <Button variant="outline" size="sm" disabled={page === 1} onClick={() => setPage((p) => p - 1)}>
                 <ChevronLeft className="w-4 h-4 mr-1" /> Prev
               </Button>
-              <Button variant="outline" size="sm" disabled={page === data.totalPages} onClick={() => setPage((p) => p + 1)}>
+              <Button variant="outline" size="sm" disabled={page === totalPages} onClick={() => setPage((p) => p + 1)}>
                 Next <ChevronRight className="w-4 h-4 ml-1" />
               </Button>
             </div>

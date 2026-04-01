@@ -15,6 +15,7 @@ export default function Alerts() {
   const [reviewAlertId, setReviewAlertId] = useState<number | null>(null);
 
   const { data, isLoading } = useListAlerts({ page, limit, status: statusFilter });
+  const alerts = Array.isArray(data?.alerts) ? data.alerts : [];
 
   const getSeverityBadge = (level: string) => {
     switch (level) {
@@ -60,14 +61,14 @@ export default function Alerts() {
            [...Array(4)].map((_, i) => (
              <Card key={i} className="p-6 animate-pulse h-40"></Card>
            ))
-        ) : data?.alerts.length === 0 ? (
+        ) : alerts.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 text-muted-foreground glass-panel rounded-xl border border-dashed border-border/50">
             <ShieldCheck className="w-16 h-16 mb-4 text-success opacity-50" />
             <h3 className="text-lg font-medium text-foreground">Inbox Zero</h3>
             <p>No {statusFilter} alerts found in the queue.</p>
           </div>
         ) : (
-          data?.alerts.map(alert => (
+          alerts.map(alert => (
             <Card key={alert.id} className="p-0 overflow-hidden flex flex-col sm:flex-row transition-all hover:border-primary/30 group">
               <div className={`w-1.5 shrink-0 ${
                 alert.severity === 'critical' ? 'bg-destructive shadow-[0_0_10px_rgba(239,68,68,0.8)]' : 
@@ -113,7 +114,7 @@ export default function Alerts() {
       {/* Review Dialog */}
       {reviewAlertId && (
         <ReviewAlertModal 
-          alert={data?.alerts.find(a => a.id === reviewAlertId) || null} 
+          alert={alerts.find((a) => a.id === reviewAlertId) || null} 
           onClose={() => setReviewAlertId(null)} 
           getSeverityBadge={getSeverityBadge}
         />
